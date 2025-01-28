@@ -1,4 +1,5 @@
 import pytest
+from packaging.version import Version
 import torch
 from acegen.data import smiles_to_tensordict
 from acegen.models.llama2 import (
@@ -12,12 +13,17 @@ try:
     import transformers
 
     transformers_available = True
+    wrong_version = False
+    if Version(transformers.__version__) <= Version("4.28.0"):
+        wrong_version = True
+        
 except ImportError:
     transformers_available = False
+    wrong_version = False
 
 skip_if_transformers_not_available = pytest.mark.skipif(
-    not transformers_available,
-    reason="transformers library is not available, skipping this test",
+    (not transformers_available) or wrong_version,
+    reason="Llama or transformers library is not available, skipping this test",
 )
 
 

@@ -1,5 +1,6 @@
 import logging
 import tarfile
+from functools import partial
 from importlib import import_module, resources
 from pathlib import Path
 
@@ -67,6 +68,14 @@ models = {
         resources.files("acegen.priors") / "gru_chembl_filtered.ckpt",
         SMILESTokenizerChEMBL(),
     ),
+    "gru_chembl34": (
+        create_gru_actor,
+        create_gru_critic,
+        create_gru_actor_critic,
+        resources.files("acegen.priors") / "gru_chembl34_vocabulary.ckpt",
+        resources.files("acegen.priors") / "gru_chembl34.ckpt",
+        SMILESTokenizerChEMBL(),
+    ),
     "lstm": (
         create_lstm_actor,
         create_lstm_critic,
@@ -74,6 +83,17 @@ models = {
         resources.files("acegen.priors") / "chembl_vocabulary.txt",
         resources.files("acegen.priors") / "lstm_chembl.ckpt",
         SMILESTokenizerChEMBL(),
+    ),
+    "lstm_guacamol": (
+        partial(create_lstm_actor, embedding_size=1024, hidden_size=1024, dropout=0.2),
+        partial(create_lstm_critic, embedding_size=1024, hidden_size=1024, dropout=0.2),
+        partial(
+            create_lstm_actor_critic, embedding_size=1024, hidden_size=1024, dropout=0.2
+        ),
+        resources.files("acegen.priors") / "lstm_guacamol_vocabulary.txt",
+        resources.files("acegen.priors")
+        / "lstm_guacamol_model_final_0.473_acegen.ckpt",
+        SMILESTokenizerGuacaMol(),
     ),
     "gpt2": (
         create_gpt2_actor,

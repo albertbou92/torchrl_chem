@@ -2,6 +2,8 @@ import warnings
 
 import numpy as np
 
+import torch
+
 from rdkit.Chem import AllChem as Chem, Draw
 
 
@@ -60,3 +62,21 @@ def draw(mol_list, molsPerRow=5, subImgSize=(300, 300)):
     image = Draw.MolsToGridImage(mols, molsPerRow=molsPerRow, subImgSize=subImgSize)
 
     return image
+
+
+def get_fp(mol):
+    """Create a Circular/Path based fingerprint from a SMILES string or RDKitMol."""
+    mol = get_mol(mol)
+    if mol:
+        ecfp = Chem.GetMorganFingerprintAsBitVect(mol, radius=3, nBits=256)
+        rdk = Chem.RDKFingerprint(mol, maxPath=6, fpSize=256, nBitsPerHash=2)
+        fp = torch.cat([torch.tensor(ecfp), torch.tensor(rdk)])
+        return fp
+    else:
+        return torch.zeros((512), dtype=torch.int64)
+
+
+def get_fp_hist(mols):
+    """Compute the histogram of fingerprints from a list of SMILES strings or Mols."""
+    fp_hist = torch.vstack([get_fp(mol) for mol in mols]).sum(0)
+    return fp_hist

@@ -1,4 +1,8 @@
 import warnings
+from typing import Union
+
+import torch
+from tensordict.nn import TensorDictModule
 
 
 def adapt_state_dict(source_state_dict: dict, target_state_dict: dict):
@@ -32,3 +36,15 @@ def adapt_state_dict(source_state_dict: dict, target_state_dict: dict):
         target_state_dict[key_target] = value_source
 
     return target_state_dict
+
+
+def reinitialize_model(
+    model: Union[torch.nn.Module, TensorDictModule], seed: int = 101
+):
+    """Random initialization of a models parameters."""
+    torch.manual_seed(seed)
+    for p in model.parameters():
+        if len(p.shape) == 1:
+            torch.nn.init.constant_(p, 0)
+        else:
+            torch.nn.init.uniform_(p)

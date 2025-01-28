@@ -3,10 +3,10 @@ from typing import Optional
 import torch
 from tensordict.tensordict import TensorDict, TensorDictBase
 from torchrl.data import (
-    CompositeSpec,
-    DiscreteTensorSpec,
+    Composite,
+    Categorical,
     OneHotDiscreteTensorSpec,
-    UnboundedContinuousTensorSpec,
+    Unbounded,
 )
 from torchrl.data.utils import DEVICE_TYPING
 from torchrl.envs import EnvBase
@@ -183,9 +183,9 @@ class TokenEnv(EnvBase):
         obs_spec = (
             OneHotDiscreteTensorSpec
             if self.one_hot_obs_encoding
-            else DiscreteTensorSpec
+            else Categorical
         )
-        self.observation_spec = CompositeSpec(
+        self.observation_spec = Composite(
             {
                 "observation": obs_spec(
                     n=self.length_vocabulary,
@@ -222,9 +222,9 @@ class TokenEnv(EnvBase):
         action_spec = (
             OneHotDiscreteTensorSpec
             if self.one_hot_action_encoding
-            else DiscreteTensorSpec
+            else Categorical
         )
-        self.action_spec = CompositeSpec(
+        self.action_spec = Composite(
             {
                 "action": action_spec(
                     n=self.length_vocabulary,
@@ -233,9 +233,9 @@ class TokenEnv(EnvBase):
                 )
             }
         ).expand(self.num_envs)
-        self.reward_spec = CompositeSpec(
+        self.reward_spec = Composite(
             {
-                "reward": UnboundedContinuousTensorSpec(
+                "reward": Unbounded(
                     shape=(1,),
                     dtype=torch.float32,
                     device=self.device,
@@ -244,15 +244,15 @@ class TokenEnv(EnvBase):
         ).expand(self.num_envs)
 
         self.done_spec = (
-            CompositeSpec(
+            Composite(
                 {
-                    "done": DiscreteTensorSpec(
+                    "done": Categorical(
                         n=2, dtype=torch.bool, device=self.device
                     ),
-                    "truncated": DiscreteTensorSpec(
+                    "truncated": Categorical(
                         n=2, dtype=torch.bool, device=self.device
                     ),
-                    "terminated": DiscreteTensorSpec(
+                    "terminated": Categorical(
                         n=2, dtype=torch.bool, device=self.device
                     ),
                 }

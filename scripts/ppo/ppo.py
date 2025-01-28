@@ -112,7 +112,11 @@ def main(cfg: "DictConfig"):
                     **cfg.get("molscore_kwargs", {}),
                 )
                 for task in MSB:
+                    start_time = datetime.datetime.now()
                     run_ppo(cfg, task)
+                    end_time = datetime.datetime.now()
+                    with open(os.path.join(task.save_dir, "runtime"), "wt") as f:
+                        f.write(str(end_time - start_time))
 
             if cfg.molscore_mode == "curriculum":
                 task = MolScoreCurriculum(

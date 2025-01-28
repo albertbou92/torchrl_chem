@@ -1,0 +1,46 @@
+# Logging configuration
+experiment_name: acegen
+agent_name: ACEGEN_MolOpt
+log_dir: results # Directory to save the results
+logger_backend: null # wandb, tensorboard, or null
+seed: 101 # multiple seeds can be provided as a list to multiple experiments sequentially e.g. [101, 102, 103]
+
+# Environment configuration
+num_envs: 32 # Number of smiles to generate in parallel
+total_smiles: 10_000
+
+# Scoring function
+molscore_mode: single # single, benchmark, or curriculum
+molscore_task: MolOpt:Albuterol_similarity # selects the Albuterol_similarity task from the MolOpt benchmark
+# molscore_task accepts task configuration files (JSON), benchmark (preset only), or curriculum task (preset only)
+# Refer to MolScore documentation for more information
+custom_task: null # Requires molscore_task mode to be set to null
+# Reefr to the tutorials for more information on how to use custom scoring functions / tasks
+
+# Fix the beginning of the generated molecules
+prompt: null  # e.g. c1ccccc
+
+# Model architecture
+model: gru # gru, lstm, gpt2, mamba or llama2
+# The default prior varies for each model. Refer to the README file in the root directory for more information.
+# The default vocabulary varies for each prior. Refer to the README file in the root directory for more information.
+custom_model_factory: null # Path to a custom model factory (e.g. my_module.create_model)
+
+# Optimizer configuration
+lr: 0.0001 # default: 0.0001
+lr_annealing: False
+eps: 1.0e-08
+weight_decay: 0.0
+
+# ACEGEN configuration
+alpha: 3 # Reinforce=1
+sigma: 0.001 # Prior regularization
+topk: 0.5 # Hill-Climb
+baseline: null # null, mab or loo
+likely_penalty_coef: 0 # Encourage exploration
+entropy_coef: 0 # Encourage exploration
+
+# Data replay configuration
+replay_sampler: prioritized # uniform, prioritized
+replay_buffer_size: 100 # 0, means no buffer
+replay_batch_size: 50

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import torch
 from tensordict import TensorDict
 
@@ -75,10 +77,18 @@ def collate_smiles_to_tensordict(
     """Function to take a list of encoded sequences and turn them into a tensordict."""
     collated_arr = torch.ones(len(arr), max_length) * -1
     for i, seq in enumerate(arr):
-        collated_arr[i, : seq.size(0)] = seq
+        if seq.size(0) > max_length:
+            warnings.warn(
+                f"Sequence {i} is longer than max_length. Truncating to {max_length}."
+            )
+            collated_arr[i, :max_length] = seq[:max_length]
+        else:
+            collated_arr[i, : seq.size(0)] = seq
     data = smiles_to_tensordict(
         collated_arr, reward=reward, replace_mask_value=0, device=device
     )
-    data.set("sequence", data.get("observation"))
-    data.set("sequence_mask", data.get("mask"))
+    data.set("sequence", data.get("observation").clone())
+    data.set("sequence_mask", data.get("mask").clone())
+    data.set(("next", "sequence"), data.get("next", "observation").clone())
+    data.set(("next", "sequence_mask"), data.get("next", "mask").clone())
     return data

@@ -163,5 +163,12 @@ cython_debug/
 results/
 logs_*
 
+# Configs unless specified
+*.yaml
+
+# Nohup files
+*.out
+*.nohup
+
 *.DS_Store*
 *gpt2_enamine_real.ckpt*

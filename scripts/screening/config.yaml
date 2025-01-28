@@ -1,0 +1,20 @@
+# Logging configuration
+experiment_name: acegen
+agent_name: screening
+log_dir: results # Directory to save the results
+logger_backend: null  # wandb, tensorboard, or null
+seed: 101 # multiple seeds can be provided as a list to multiple experiments sequentially e.g. [101, 102, 103]
+
+# Environment configuration
+total_smiles: 10_000 # Total number of smiles to generate
+
+# Scoring function
+molscore_mode: single # single, benchmark, or curriculum
+molscore_task: MolOpt:Albuterol_similarity # selects the Albuterol_similarity task from the MolOpt benchmark
+# molscore_task accepts task configuration files (JSON), benchmark (preset only), or curriculum task (preset only)
+# Refer to MolScore documentation for more information
+custom_task: null # Requires molscore_task mode to be set to null
+# Reefr to the tutorials for more information on how to use custom scoring functions / tasks
+
+# Databaset
+dataset_path: null # Path to the dataset

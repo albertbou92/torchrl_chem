@@ -97,24 +97,22 @@ class SMILESTokenizerGuacaMol:
         self.REGEXP_ORDER = ["brackets", "brcl"]
         self.start_token = start_token
         self.end_token = end_token
+        self.encode_dict = {
+            "Br": "Y",
+            "Cl": "X",
+            "Si": "A",
+            "Se": "Z",
+            "@@": "R",
+            "se": "E",
+        }
+        self.decode_dict = {v: k for k, v in self.encode_dict.items()}
 
     def tokenize(self, data, with_begin_and_end=False):
         """Tokenizes a SMILES string."""
+        for symbol, token in self.encode_dict.items():
+            data = data.replace(symbol, token)
 
-        def split_by(data, regexps):
-            if not regexps:
-                return list(data)
-            regexp = self.REGEXPS[regexps[0]]
-            splitted = regexp.split(data)
-            tokens = []
-            for i, split in enumerate(splitted):
-                if i % 2 == 0:
-                    tokens += split_by(split, regexps[1:])
-                else:
-                    tokens.append(split)
-            return tokens
-
-        tokens = split_by(data, self.REGEXP_ORDER)
+        tokens = list(data)
         if with_begin_and_end:
             tokens = [self.start_token] + tokens + [self.end_token]
         return tokens
@@ -127,6 +125,9 @@ class SMILESTokenizerGuacaMol:
                 break
             if token != self.start_token:
                 smi += token
+
+        for symbol, token in self.decode_dict.items():
+            smi = smi.replace(symbol, token)
         return smi
 
 

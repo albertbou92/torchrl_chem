@@ -345,9 +345,8 @@ def main(cfg: "DictConfig"):
                     "train/reward": episode_rewards.mean().item(),
                     "train/min_reward": episode_rewards.min().item(),
                     "train/max_reward": episode_rewards.max().item(),
-                    "train/episode_length": episode_length.sum().item() / len(
-                        episode_length
-                    ),
+                    "train/episode_length": episode_length.sum().item()
+                    / len(episode_length),
                 }
             )
             if logger:
